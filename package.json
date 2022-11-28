@@ -1,0 +1,19 @@
+{
+  "name": "zeongimmigrationbackend",
+  "version": "1.0.0",
+  "description": "Backend Apis and serverless infra",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Sassyprogrammer1/zeongimmigrationbackend.git"
+  },
+  "author": "Hamza Jamshed",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Sassyprogrammer1/zeongimmigrationbackend/issues"
+  },
+  "homepage": "https://github.com/Sassyprogrammer1/zeongimmigrationbackend#readme"
+}
