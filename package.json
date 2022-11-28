@@ -15,5 +15,10 @@
   "bugs": {
     "url": "https://github.com/Sassyprogrammer1/zeongimmigrationbackend/issues"
   },
-  "homepage": "https://github.com/Sassyprogrammer1/zeongimmigrationbackend#readme"
+  "homepage": "https://github.com/Sassyprogrammer1/zeongimmigrationbackend#readme",
+  "devDependencies": {
+    "@types/aws-serverless-express": "^3.3.5",
+    "@types/node": "^18.11.9",
+    "typescript": "^4.9.3"
+  }
 }
