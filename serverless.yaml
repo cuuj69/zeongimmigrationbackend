@@ -1,0 +1,101 @@
+service: zeong-immigration-infra
+custom:
+  #stage
+  stage: dev
+  #Dynamodb table name
+  tableName: ${self:custom.stage}-zeong-immigration
+provider:
+  name: aws
+  #Node.js runtime
+  runtime: nodejs16.x
+  #Region of deployment
+  region: us-east-2
+  #Env variables
+  environment:
+    user_pool_id: {Ref: UserPool}
+    client_id: {Ref: UserClient}
+    tableName: ${self:custom.tableName}
+  #IAM roles
+  iamRoleStatements:
+    #Role for Cognito
+    - Effect: Allow
+      Action:
+        - cognito-idp:AdminInitiateAuth
+        - cognito-idp:AdminCreateUser
+        - cognito-idp:AdminSetUserPassword
+      Resource: "*"
+    #Role for DynamoDB
+    - Effect: Allow
+      Action:
+        - dynamodb:DescribeTable
+        - dynamodb:Query
+        - dynamodb:Scan
+        - dynamodb:GetItem
+        - dynamodb:PutItem
+        - dynamodb:UpdateItem
+        - dynamodb:DeleteItem
+      # Restrict our IAM role permissions to
+      # the specific table for the stage
+      Resource:
+        - "Fn::GetAtt": [UserTable, Arn]
+
+functions:
+  app:
+    handler: src/index.handler
+    events:
+      - http:
+          path: ANY /
+          method: post
+          cors: true
+          authorizer:
+            name: PrivateAuthorizer
+            type: COGNITO_USER_POOLS
+            arn:
+              Fn::GetAtt:
+                - UserPool
+                - Arn
+            claims:
+              - email
+      - http: "ANY {proxy+}"
+
+resources:
+  Resources:
+    UserPool:
+      Type: AWS::Cognito::UserPool
+      Properties:
+        UserPoolName: zeong-user-pool
+        Schema:
+          - Name: email
+            Required: true
+            Mutable: true
+        Policies:
+          PasswordPolicy:
+            MinimumLength: 6
+        AutoVerifiedAttributes: ["email"]
+
+    UserClient:
+      Type: AWS::Cognito::UserPoolClient
+      Properties:
+        ClientName: user-pool-ui
+        GenerateSecret: false
+        UserPoolId: {Ref: UserPool}
+        AccessTokenValidity: 5
+        IdTokenValidity: 5
+        ExplicitAuthFlows:
+          - "ADMIN_NO_SRP_AUTH"
+
+    UserTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: ${self:custom.tableName}
+        AttributeDefinitions:
+          - AttributeName: userId
+            AttributeType: S
+          - AttributeName: uniId
+            AttributeType: S
+        KeySchema:
+          - AttributeName: userId
+            KeyType: HASH
+          - AttributeName: uniId
+            KeyType: RANGE
+        BillingMode: PAY_PER_REQUEST
