@@ -2,13 +2,26 @@
   "name": "zeongimmigrationbackend",
   "version": "1.0.0",
   "description": "Backend Apis and serverless infra",
-  "main": "index.ts",
+  "main": "index.js",
   "scripts": {
+    "start:dev": "nodemon",
+    "start:prod": "webpack --mode production",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/Sassyprogrammer1/zeongimmigrationbackend.git"
+  },
+  "nodemonConfig": {
+    "delay": 1000,
+    "watch": [
+      "src"
+    ],
+    "ext": "ts,json",
+    "ignore": [
+      "src/**/*.spec.ts"
+    ],
+    "exec": "ts-node ./src/index.ts"
   },
   "author": "Hamza Jamshed",
   "license": "ISC",
@@ -21,9 +34,21 @@
     "@types/cors": "^2.8.12",
     "@types/express": "^4.17.14",
     "@types/node": "^18.11.9",
-    "typescript": "^4.9.3"
+    "@types/webpack-dev-server": "^4.7.2",
+    "babel-loader": "^9.1.0",
+    "nodemon": "^2.0.20",
+    "rimraf": "^3.0.2",
+    "ts-node": "^10.9.1",
+    "typescript": "^4.9.3",
+    "webpack": "^5.75.0",
+    "webpack-cli": "^5.0.0",
+    "webpack-dev-server": "^4.11.1"
   },
   "dependencies": {
+    "@babel/preset-env": "^7.20.2",
+    "@babel/preset-typescript": "^7.18.6",
+    "@types/body-parser": "^1.19.2",
+    "aws-serverless-express": "^3.4.0",
     "body-parser": "^1.20.1",
     "cors": "^2.8.5",
     "express": "^4.18.2",
