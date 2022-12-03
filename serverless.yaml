@@ -1,4 +1,6 @@
 service: zeong-immigration-infra
+plugins:
+  - serverless-plugin-typescript
 custom:
   #stage
   stage: dev
@@ -41,8 +43,11 @@ provider:
 
 functions:
   app:
-    handler: src/index.handler
+    handler: ./src/index.handler
     events:
+      - http:
+          path: ANY /
+          method: get
       - http:
           path: ANY /
           method: post

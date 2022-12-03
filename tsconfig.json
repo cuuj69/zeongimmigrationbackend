@@ -1,16 +1,16 @@
 {
   "compilerOptions": {
     "module": "commonjs",
+    "preserveConstEnums": true,
     "declaration": true,
     "removeComments": true,
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
     "allowSyntheticDefaultImports": true,
-    "target": "esnext",
+    "target": "es5",
     "sourceMap": true,
-    "outDir": "./dist",
+    "outDir": "./build",
     "baseUrl": "./src",
-    "incremental": true,
     "skipLibCheck": true,
     "strictNullChecks": true,
     "noImplicitAny": true,
@@ -18,6 +18,10 @@
     "forceConsistentCasingInFileNames": false,
     "noFallthroughCasesInSwitch": false,
     "esModuleInterop": true,
+    "moduleResolution": "node",
+    "allowJs": true,
+    "lib": ["es2015"],
+    "rootDir": "./"
   },
   "include": [
     "src/**/*.ts"
