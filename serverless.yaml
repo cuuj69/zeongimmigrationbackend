@@ -1,4 +1,7 @@
 service: zeong-immigration-infra
+
+useDotenv: true
+
 plugins:
   - serverless-plugin-typescript
 custom:
@@ -14,8 +17,8 @@ provider:
   region: us-east-2
   #Env variables
   environment:
-    user_pool_id: {Ref: UserPool}
-    client_id: {Ref: UserClient}
+    COGNITO_USER_POOL_ID: ${env:COGNITO_USER_POOL_ID}
+    COGNITO_USER_CLIENT_ID: ${env:COGNITO_USER_CLIENT_ID}
     tableName: ${self:custom.tableName}
   #IAM roles
   iamRoleStatements:
@@ -44,6 +47,11 @@ provider:
 functions:
   app:
     handler: ./src/index.handler
+    environment:
+      REGION: ${env:REGION}
+      COGNITO_USER_POOL_ID: ${env:COGNITO_USER_POOL_ID}
+      COGNITO_USER_CLIENT_ID: ${env:COGNITO_USER_CLIENT_ID}
+      AUTH_FLOW: ${env:AUTH_FLOW}
     events:
       - http:
           path: ANY /
@@ -81,7 +89,7 @@ resources:
     UserClient:
       Type: AWS::Cognito::UserPoolClient
       Properties:
-        ClientName: user-pool-ui
+        ClientName:
         GenerateSecret: false
         UserPoolId: {Ref: UserPool}
         AccessTokenValidity: 5

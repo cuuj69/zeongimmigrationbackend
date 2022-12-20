@@ -1,0 +1,29 @@
+{
+	"components": {
+		"examples": {},
+		"headers": {},
+		"parameters": {},
+		"requestBodies": {},
+		"responses": {},
+		"schemas": {},
+		"securitySchemes": {}
+	},
+	"info": {
+		"title": "zeongimmigrationbackend",
+		"version": "1.0.0",
+		"description": "Backend Apis and serverless infra",
+		"license": {
+			"name": "ISC"
+		},
+		"contact": {
+			"name": "Hamza Jamshed"
+		}
+	},
+	"openapi": "3.0.0",
+	"paths": {},
+	"servers": [
+		{
+			"url": "/"
+		}
+	]
+}
