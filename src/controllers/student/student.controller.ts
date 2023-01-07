@@ -1,30 +1,30 @@
-import AWS from "aws-sdk";
-import {createConnection} from "@typedorm/core";
-import {DocumentClientV2} from "@typedorm/document-client";
-import zeongTable from "../../db/tables/table";
-import setResponse from "../../helpers/setResponse";
-import {Route, Tags, Post, Body} from "tsoa";
-import {getEntityManager} from "@typedorm/core";
-import * as dotenv from "dotenv";
-import {Student} from "../../db/entities/studentEntity";
+import AWS from 'aws-sdk';
+import {createConnection} from '@typedorm/core';
+import {DocumentClientV2} from '@typedorm/document-client';
+import zeongTable from '../../db/tables/table';
+import setResponse from '../../helpers/setResponse';
+import {Route, Tags, Post, Body} from 'tsoa';
+import {getEntityManager} from '@typedorm/core';
+import * as dotenv from 'dotenv';
+import {Student} from '../../db/entities/studentEntity';
 dotenv.config();
 
-const region = `${process.env.REGION}`;
-const documentClient = new DocumentClientV2(
-  new AWS.DynamoDB.DocumentClient({
-    region: region,
-    credentials: {
-      accessKeyId: `${process.env.ACCESS_KEY}`,
-      secretAccessKey: `${process.env.ACCESS_SECRET}`,
-    },
-  }),
-);
-//initialize with specifying list of entities
-createConnection({
-  table: zeongTable,
-  entities: [Student],
-  documentClient,
-});
+// const region = `${process.env.REGION}`;
+// const documentClient = new DocumentClientV2(
+//   new AWS.DynamoDB.DocumentClient({
+//     region: region,
+//     credentials: {
+//       accessKeyId: `${process.env.ACCESS_KEY}`,
+//       secretAccessKey: `${process.env.ACCESS_SECRET}`,
+//     },
+//   }),
+// );
+// //initialize with specifying list of entities
+// createConnection({
+//   table: zeongTable,
+//   entities: [Student],
+//   documentClient,
+// });
 
 interface createStudent {
   Name: string;
@@ -51,10 +51,10 @@ interface createStudent {
   Scores: JSON;
 }
 
-@Route("/create")
-@Tags("student-report")
+@Route('/create')
+@Tags('student-report')
 export default class CreateStudent {
-  @Post("/")
+  @Post('/')
   async createStudent(@Body() body: any) {
     const student = new Student();
     student.Name = body.Name;

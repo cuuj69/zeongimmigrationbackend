@@ -160,6 +160,34 @@
 					}
 				}
 			}
+		},
+		"/add": {
+			"post": {
+				"operationId": "CreateUni",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {}
+							}
+						}
+					}
+				},
+				"tags": [
+					"universities-data"
+				],
+				"security": [],
+				"parameters": [],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {}
+						}
+					}
+				}
+			}
 		}
 	},
 	"servers": [
