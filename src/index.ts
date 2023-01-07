@@ -26,10 +26,10 @@ app.use(
     },
   }),
 );
-app.use("/api", router);
+app.use("/api/v1", router);
 
-app.listen(3000, () => {
-  console.log("app is runnnig on port 3000");
+app.listen(3001, () => {
+  console.log("app is runnnig on port 3001");
 });
 
 export const handler = sls(app);

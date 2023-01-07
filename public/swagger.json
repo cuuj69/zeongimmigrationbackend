@@ -20,7 +20,148 @@
 		}
 	},
 	"openapi": "3.0.0",
-	"paths": {},
+	"paths": {
+		"/register": {
+			"post": {
+				"operationId": "Register",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"properties": {
+										"headers": {
+											"properties": {
+												"Access-Control-Allow-Credentials": {
+													"type": "boolean"
+												},
+												"Access-Control-Allow-Origin": {
+													"type": "string"
+												},
+												"Content-Type": {
+													"type": "string"
+												}
+											},
+											"required": [
+												"Access-Control-Allow-Credentials",
+												"Access-Control-Allow-Origin",
+												"Content-Type"
+											],
+											"type": "object"
+										},
+										"body": {
+											"additionalProperties": false,
+											"type": "object"
+										},
+										"statusCode": {
+											"type": "number",
+											"format": "double"
+										}
+									},
+									"required": [
+										"headers",
+										"body",
+										"statusCode"
+									],
+									"type": "object"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"signup"
+				],
+				"security": [],
+				"parameters": []
+			}
+		},
+		"/login": {
+			"post": {
+				"operationId": "Login",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"properties": {
+										"headers": {
+											"properties": {
+												"Access-Control-Allow-Credentials": {
+													"type": "boolean"
+												},
+												"Access-Control-Allow-Origin": {
+													"type": "string"
+												},
+												"Content-Type": {
+													"type": "string"
+												}
+											},
+											"required": [
+												"Access-Control-Allow-Credentials",
+												"Access-Control-Allow-Origin",
+												"Content-Type"
+											],
+											"type": "object"
+										},
+										"body": {
+											"additionalProperties": false,
+											"type": "object"
+										},
+										"statusCode": {
+											"type": "number",
+											"format": "double"
+										}
+									},
+									"required": [
+										"headers",
+										"body",
+										"statusCode"
+									],
+									"type": "object"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"signin"
+				],
+				"security": [],
+				"parameters": []
+			}
+		},
+		"/create": {
+			"post": {
+				"operationId": "CreateStudent",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {}
+							}
+						}
+					}
+				},
+				"tags": [
+					"student-report"
+				],
+				"security": [],
+				"parameters": [],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {}
+						}
+					}
+				}
+			}
+		}
+	},
 	"servers": [
 		{
 			"url": "/"
