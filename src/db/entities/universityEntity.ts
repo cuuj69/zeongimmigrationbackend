@@ -21,13 +21,17 @@ export class University {
   @Attribute()
   Name: string;
   @Attribute()
+  Acronym: string;
+  @Attribute()
   Type: string;
   @Attribute()
   CanadianRanking: string;
   @Attribute()
   WorldRanking: JSON;
   @Attribute()
-  Address: JSON;
+  Address: string;
+  @Attribute()
+  Province: string;
   @Attribute()
   GoogleMapUrl: JSON;
   @Attribute()
@@ -36,6 +40,10 @@ export class University {
   Phone: string;
   @Attribute()
   WebsiteUrl: string;
+  @Attribute()
+  TuitionUrl: string;
+  @Attribute()
+  TutionRange: string;
   @Attribute()
   ApplicationDeadline: JSON;
   @Attribute()

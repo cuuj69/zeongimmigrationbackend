@@ -30,6 +30,7 @@ const documentClient = new DocumentClientV2(
 
 interface universities {
   Name: string;
+  Acronym: string;
   Type: string;
   CanadianRanking: string;
   WorldRanking: JSON;
@@ -38,6 +39,8 @@ interface universities {
   AddmissionEmail: JSON;
   Phone: string;
   WebsiteUrl: string;
+  TuitionUrl: string;
+  TuitionRange: string;
   ApplicationDeadline: JSON;
   AdmissionRequirements: JSON;
   LangRequirements: JSON;
@@ -51,7 +54,9 @@ export default class CreateUniversity {
   async createUni(@Body() body: any) {
     const uni = new University();
     uni.Name = body.Name;
+    uni.Acronym = body.Acronym;
     uni.Type = body.Type;
+    uni.TuitionUrl = body.TuitionUrl;
     uni.CanadianRanking = body.CanadianRanking;
     uni.WorldRanking = body.WorldRanking;
     uni.Address = body.Address;
@@ -59,6 +64,7 @@ export default class CreateUniversity {
     uni.AddmissionEmail = body.AddmissionEmail;
     uni.Phone = body.Phone;
     uni.WebsiteUrl = body.WebsiteUrl;
+    uni.TutionRange = body.TuitionRange;
     uni.ApplicationDeadline = body.ApplicationDeadline;
     uni.AdmissionRequirements = body.AdmissionRequirements;
     uni.LangRequirements = body.LangRequirements;
