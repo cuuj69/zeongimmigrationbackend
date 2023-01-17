@@ -18,6 +18,7 @@ provider:
     COGNITO_USER_POOL_ID: ${env:COGNITO_USER_POOL_ID}
     COGNITO_USER_CLIENT_ID: ${env:COGNITO_USER_CLIENT_ID}
     ZEONG_TABLE: ${env:ZEONG_TABLE}
+  #Custom Attributes for cognito pool
   CognitoAddCustomAttributes:
     CognitoUserPoolIdOutputKey: ${env:COGNITO_USER_POOL_ID} # The key of the outputted UserPool Ref
     CognitoUserPoolClientIdOutputKey: ${env:COGNITO_USER_CLIENT_ID} # The key of the outputted UserPoolClient Ref
@@ -25,7 +26,7 @@ provider:
       - AttributeDataType: String
         DeveloperOnlyAttribute: False
         Mutable: True
-        Name: "role" # this will end up being custom:another
+        Name: 'role' # this will end up being custom:another
         Required: False
   #IAM roles
   iamRoleStatements:
@@ -37,7 +38,7 @@ provider:
         - cognito-idp:AdminSetUserPassword
         - cognito-idp:ListUsers
       Resource:
-        - "Fn::GetAtt": [UserPool, Arn]
+        - 'Fn::GetAtt': [UserPool, Arn]
     #Role for DynamoDB
     - Effect: Allow
       Action:
@@ -51,8 +52,31 @@ provider:
       # Restrict our IAM role permissions to
       # the specific table for the stage
       Resource:
-        - "Fn::GetAtt": [ZeongTable, Arn]
-
+        - 'Fn::GetAtt': [ZeongTable, Arn]
+    #Role for Elastic Search Cluster
+    - Effect: Allow
+      Action:
+        - es:ESHttpPost
+        - es:ESHttpPut
+        - es:ESHttpDelete
+        - es:ESHttpGet
+      Resource:
+        - {'Fn::GetAtt': ['ElasticSearchInstance', 'DomainArn']}
+        - {
+            'Fn::Join':
+              [
+                '',
+                [
+                  'Fn::GetAtt': ['ElasticSearchInstance', 'DomainArn'],
+                  '/*',
+                ],
+              ],
+          }
+      Condition:
+        IpAddress:
+          aws:SourceIp:
+            - '0.0.0.0' # Whitelisted IP
+# Lambda Functions
 functions:
   app:
     handler: ./src/index.handler
@@ -61,6 +85,8 @@ functions:
       COGNITO_USER_POOL_ID: ${env:COGNITO_USER_POOL_ID}
       COGNITO_USER_CLIENT_ID: ${env:COGNITO_USER_CLIENT_ID}
       AUTH_FLOW: ${env:AUTH_FLOW}
+      elasticURL:
+        Fn::GetAtt: [ElasticSearchInstance, DomainEndpoint]
     events:
       - http:
           path: ANY /
@@ -79,7 +105,7 @@ functions:
             claims:
               - email
               - custom:role
-      - http: "ANY {proxy+}"
+      - http: 'ANY {proxy+}'
 
   cognitoCustomMessageLambda:
     handler: ./src/EDA/post-registration.handler
@@ -88,9 +114,10 @@ functions:
           pool: zeong-user-pool
           trigger: PostConfirmation
           existing: true
-
+# Other Resources
 resources:
   Resources:
+    #cognito user pool
     UserPool:
       Type: AWS::Cognito::UserPool
       Properties:
@@ -99,15 +126,15 @@ resources:
           - Name: email
             Required: true
             Mutable: true
-          - Name: "role"
+          - Name: 'role'
             Required: False
             Mutable: true
             AttributeDataType: String
         Policies:
           PasswordPolicy:
             MinimumLength: 6
-        AutoVerifiedAttributes: ["email"]
-
+        AutoVerifiedAttributes: ['email']
+    # Cognito User Client
     UserClient:
       Type: AWS::Cognito::UserPoolClient
       Properties:
@@ -117,8 +144,8 @@ resources:
         AccessTokenValidity: 5
         IdTokenValidity: 5
         ExplicitAuthFlows:
-          - "ADMIN_NO_SRP_AUTH"
-
+          - 'ADMIN_NO_SRP_AUTH'
+    #Dynamodb Table
     ZeongTable:
       Type: AWS::DynamoDB::Table
       Properties:
@@ -133,3 +160,30 @@ resources:
         ProvisionedThroughput:
           ReadCapacityUnits: 3
           WriteCapacityUnits: 3
+    #ElasticSeach Instance
+    ElasticSearchInstance:
+      Type: AWS::Elasticsearch::Domain
+      Properties:
+        EBSOptions:
+          EBSEnabled: true
+          VolumeType: gp2
+          VolumeSize: 10
+        ElasticsearchClusterConfig:
+          InstanceType: t2.small.elasticsearch
+          InstanceCount: 1
+          DedicatedMasterEnabled: false
+          ZoneAwarenessEnabled: false
+        ElasticsearchVersion: 5.3
+        AccessPolicies:
+          Version: '2012-10-17'
+          Statement:
+            - Effect: 'Allow'
+              Principal:
+                AWS: '*'
+              Action: 'es:*'
+              Resource: '*'
+              Condition:
+                IpAddress:
+                  aws:SourceIp: ['182.177.251.40']
+        AdvancedOptions:
+          rest.action.multi.allow_explicit_index: 'true'
