@@ -57,9 +57,11 @@
   "dependencies": {
     "@babel/preset-env": "^7.20.2",
     "@babel/preset-typescript": "^7.18.6",
+    "@opensearch-project/opensearch": "^2.1.0",
     "@typedorm/common": "^1.15.3",
     "@typedorm/core": "^1.15.3",
     "@types/body-parser": "^1.19.2",
+    "aws-opensearch-connector": "^1.1.0",
     "aws-sdk": "^2.1277.0",
     "aws-serverless-express": "^3.4.0",
     "body-parser": "^1.20.1",
