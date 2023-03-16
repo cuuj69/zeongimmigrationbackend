@@ -23,8 +23,7 @@ router.post('/search', async (req, res) => {
   let {searchQuery} = req.body;
   let uniCourses = new UniCourses();
   const search = await uniCourses.searchUniCourses(searchQuery);
-  const inner_hits = search.hits;
-  return res.json(inner_hits);
+  return res.json(search);
 });
 
 export default router;

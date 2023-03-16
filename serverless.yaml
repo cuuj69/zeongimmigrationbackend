@@ -72,10 +72,11 @@ provider:
                 ],
               ],
           }
-      Condition:
-        IpAddress:
-          aws:SourceIp:
-            - '0.0.0.0' # Whitelisted IP
+      # Condition:
+      #   IpAddress:
+      #     aws:SourceIp:
+      #       - '0.0.0.0' # Whitelisted IP
+
 # Lambda Functions
 functions:
   app:
@@ -84,7 +85,10 @@ functions:
       REGION: ${env:REGION}
       COGNITO_USER_POOL_ID: ${env:COGNITO_USER_POOL_ID}
       COGNITO_USER_CLIENT_ID: ${env:COGNITO_USER_CLIENT_ID}
+      ACCESS_KEY: ${env:ACCESS_KEY}
+      ACCESS_SECRET: ${env:ACCESS_SECRET}
       AUTH_FLOW: ${env:AUTH_FLOW}
+      ES_HOST: ${env:ES_HOST}
       elasticURL:
         Fn::GetAtt: [ElasticSearchInstance, DomainEndpoint]
     events:
@@ -95,16 +99,16 @@ functions:
           path: ANY /
           method: post
           cors: true
-          authorizer:
-            name: PrivateAuthorizer
-            type: COGNITO_USER_POOLS
-            arn:
-              Fn::GetAtt:
-                - UserPool
-                - Arn
-            claims:
-              - email
-              - custom:role
+          # authorizer:
+          #   name: PrivateAuthorizer
+          #   type: COGNITO_USER_POOLS
+          #   arn:
+          #     Fn::GetAtt:
+          #       - UserPool
+          #       - Arn
+          #   claims:
+          #     - email
+          #     - custom:role
       - http: 'ANY {proxy+}'
 
   cognitoCustomMessageLambda:
@@ -117,6 +121,19 @@ functions:
 # Other Resources
 resources:
   Resources:
+    # LambdaElasticSearchAccessRole:
+    #   Type: AWS::IAM::Role
+    #   Properties:
+    #     AssumeRolePolicyDocument:
+    #       Statement:
+    #         - Effect: Allow
+    #           Principal:
+    #             Service: lambda.amazonaws.com
+    #           Action: sts:AssumeRole
+    #     ManagedPolicyArns:
+    #       - arn:aws:iam::aws:policy/AWSXrayWriteOnlyAccess
+    #       - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+    #       - arn:aws:iam::aws:policy/AmazonESFullAccess
     #cognito user pool
     UserPool:
       Type: AWS::Cognito::UserPool
@@ -161,6 +178,30 @@ resources:
           ReadCapacityUnits: 3
           WriteCapacityUnits: 3
     #ElasticSeach Instance
+    # ElasticSearchInstance:
+    #   Type: AWS::Elasticsearch::Domain
+    #   Properties:
+    #     EBSOptions:
+    #       EBSEnabled: true
+    #       VolumeType: gp2
+    #       VolumeSize: 10
+    #     ElasticsearchClusterConfig:
+    #       InstanceType: t3.small.elasticsearch
+    #       InstanceCount: 1
+    #       DedicatedMasterEnabled: false
+    #       ZoneAwarenessEnabled: false
+    #     ElasticsearchVersion: 6.7
+    #     AccessPolicies:
+    #       Version: '2012-10-17'
+    #       Statement:
+    #         - Effect: 'Allow'
+    #           Principal:
+    #             AWS: '*'
+    #           Action: 'es:*'
+    #           Resource: '*'
+    #           Condition:
+    #             IpAddress:
+    #               aws:SourceIp: ['2.50.46.161', '102.176.94.98']
     ElasticSearchInstance:
       Type: AWS::Elasticsearch::Domain
       Properties:
@@ -169,21 +210,18 @@ resources:
           VolumeType: gp2
           VolumeSize: 10
         ElasticsearchClusterConfig:
-          InstanceType: t2.small.elasticsearch
+          InstanceType: t3.small.elasticsearch
           InstanceCount: 1
           DedicatedMasterEnabled: false
           ZoneAwarenessEnabled: false
-        ElasticsearchVersion: 5.3
+        ElasticsearchVersion: 6.7
         AccessPolicies:
           Version: '2012-10-17'
           Statement:
-            - Effect: 'Allow'
+            - Effect: Allow
+              Action: ['es:ESHttp*']
               Principal:
-                AWS: '*'
-              Action: 'es:*'
-              Resource: '*'
-              Condition:
-                IpAddress:
-                  aws:SourceIp: ['182.177.251.40']
+                AWS: !Sub 'arn:aws:iam::315702110963:role/zeong-immigration-infrastruct-dev-us-east-2-lambdaRole'
+              Resource: !Sub 'arn:aws:es:us-east-2:315702110963:domain/zeong-i-elasti-128waval2djnk'
         AdvancedOptions:
           rest.action.multi.allow_explicit_index: 'true'
