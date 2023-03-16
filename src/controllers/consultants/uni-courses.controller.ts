@@ -130,6 +130,7 @@ export default class UniCourses {
 
       const locationsSearchQuery = {
         _source: ['_id', 'comments', '_parent', 'name', 'geotag'],
+        size: 100,
         query: {
           terms: {
             geotag: locations,
@@ -138,19 +139,13 @@ export default class UniCourses {
       };
 
       try {
-        let search = await client.search({
-          index: 'universities',
-          body: locationsSearchQuery,
-        });
+      
 
         // resolve the promise
-        let resolvedPromise = await Promise.all([search]);
-
-        // map through the results of the locations query
-        // return an array of universities names which are present in the rankings payload
+        let resolvedPromise = await this.queryElasticSearch(locationsSearchQuery,);
 
         const filteredLocationNames =
-          resolvedPromise[0].body.hits.hits.map((result: any) => {
+          resolvedPromise.map((result: any) => {
             if (rankings.includes(result._source.name)) {
               return result._source.name;
             }
@@ -177,12 +172,13 @@ export default class UniCourses {
       // Employments Search Query
       const employmentsSearchQuery = {
         _source: ['name'],
+        size: 100,
         query: {
           nested: {
             path: 'courses.minor',
             query: {
               terms: {
-                'courses.minor.courseName': employments,
+                'courses.minor.importantTag': employments,
               },
             },
           },
@@ -190,18 +186,14 @@ export default class UniCourses {
       };
 
       try {
-        let search = await client.search({
-          index: 'universities',
-          body: employmentsSearchQuery,
-        });
-
+      
         //resolve the promise
-        let resolvedPromise = await Promise.all([search]);
+        let resolvedPromise = await this.queryElasticSearch(employmentsSearchQuery,);
 
-        //map through the results of them employments query
+        
 
         //return an array of array of universities name
-        const filteredEmployments = resolvedPromise[0].body.hits.hits.map(
+        const filteredEmployments = resolvedPromise.map(
           (result: any) => {
             if (rankings.includes(result._source.name)) {
               return result._source.name;
@@ -212,6 +204,7 @@ export default class UniCourses {
         var filtered = filteredEmployments.filter(
           (x: any) => x !== undefined,
         );
+
         return filtered;
       } catch (err) {
         console.log(err);
@@ -235,10 +228,11 @@ export default class UniCourses {
       );
       // const normalizedRankings = rankings.map(name => name.toLowerCase().replace(/^(the\s+)?(.+?)\s+(university|college)$/g, '$2').trim());
 
-      console.log(normalizedRankings);
+      // console.log(normalizedRankings);
 
       const rankingssearchQuery = {
         _source: ['name'],
+        size: 100,
         query: {
           terms: {
             name: normalizedRankings,
@@ -247,17 +241,9 @@ export default class UniCourses {
       };
 
       try {
-        let search = await client.search({
-          index: 'universities',
-          body: rankingssearchQuery,
-        });
+        let resolvedPromise = await this.queryElasticSearch(rankingssearchQuery,);
 
-        // resolve the promise
-        let resolvedPromise = await Promise.all([search]);
-
-        console.log(resolvedPromise);
-
-        const filteredRankings = resolvedPromise[0].body.hits.hits.map(
+        const filteredRankings = resolvedPromise.map(
           (result: any) => {
             // if(rankings.includes(result._source.name)){
             return result._source.name;
@@ -271,6 +257,7 @@ export default class UniCourses {
           (x: any) => x !== undefined,
         );
         return filtered2;
+
       } catch (err) {
         console.log(err);
         return setResponse(err.statusCode, {
@@ -286,6 +273,7 @@ export default class UniCourses {
 
       const locationsSearchQuery = {
         _source: ['_id', 'comments', '_parent', 'name', 'geotag'],
+        size: 100,
         query: {
           terms: {
             geotag: locations,
@@ -294,15 +282,11 @@ export default class UniCourses {
       };
 
       try {
-        let search = await client.search({
-          index: 'universities',
-          body: locationsSearchQuery,
-        });
 
-        let resolvedPromise = await Promise.all([search]);
+        let resolvedPromise = await this.queryElasticSearch(locationsSearchQuery, )
 
         const filteredLocationNames =
-          resolvedPromise[0].body.hits.hits.map((result: any) => {
+          resolvedPromise.map((result: any) => {
             return result._source.name;
           });
 
@@ -325,27 +309,23 @@ export default class UniCourses {
 
       const employmentsSearchQuery = {
         _source: ['name'],
+        size: 100,
         query: {
           nested: {
             path: 'courses.minor',
             query: {
               terms: {
-                'courses.minor.courseName': employments,
+                'courses.minor.importantTag': employments,
               },
             },
           },
         },
       };
       try {
-        let search = await client.search({
-          index: 'universities',
-          body: employmentsSearchQuery,
-        });
-
-        let resolvedPromiseTwo = await Promise.all([search]);
+        let resolvedPromiseTwo = await this.queryElasticSearch(employmentsSearchQuery, )
 
         const filteredEmployments =
-          resolvedPromiseTwo[0].body.hits.hits.map((result: any) => {
+          resolvedPromiseTwo.map((result: any) => {
             return result._source.name;
           });
 
@@ -367,23 +347,24 @@ export default class UniCourses {
 
       const searchQuery = {
         _source: ['name'],
+        size: 100,
         query: {
           terms: {
             geotag: locations,
-            'courses.minor.courseName': employments,
+            'courses.minor.importantTag': employments,
           },
         },
       };
 
       try {
-        let search = await client.search({
-          index: 'universities',
-          body: searchQuery,
-        });
+      //   let search = await client.search({
+      //     index: 'universities',
+      //     body: searchQuery,
+      //   });
 
-        let resolvedPromise = await Promise.all([search]);
+        let resolvedPromise = await this.queryElasticSearch(searchQuery)
 
-        const filteredQuery = resolvedPromise[0].body.hits.hits.map(
+        const filteredQuery = resolvedPromise.map(
           (result: any) => {
             return result._source.name;
           },
